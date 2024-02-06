@@ -1,15 +1,14 @@
 <template>
-  <div >
-   
-   <!-- <NuxtLink to="/dashboard">Dashboard</NuxtLink>
-   <NuxtLink to="/">HOME</NuxtLink> -->
+  <div>
 
-<NuxtLayout>
-  <NuxtPage />
-</NuxtLayout>
-  
- 
- 
+    <SpinnerPage />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+
+    <BusinessCardToast />
+    <ServerFeedbackToast/>
    
+
   </div>
 </template>

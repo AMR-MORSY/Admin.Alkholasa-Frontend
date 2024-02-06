@@ -67,8 +67,10 @@
       </button>
     </section>
 
-
-      <editor-content :editor="editor" />
+<section dir="rtl">
+  <editor-content :editor="editor" />
+</section>
+    
   
    
   </div>
@@ -79,6 +81,7 @@ import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline';
 import Link from "@tiptap/extension-link";
+import TextDirection from "tiptap-text-direction";
 
 
 
@@ -114,7 +117,10 @@ const editor = useEditor({
     Link.configure({
       protocols: ['ftp', 'mailto'],
       autolink: false,
-    })
+    }),
+    TextDirection.configure({
+      defaultDirection: "rtl",
+      }),
   ],
   editorProps: {
     attributes: {

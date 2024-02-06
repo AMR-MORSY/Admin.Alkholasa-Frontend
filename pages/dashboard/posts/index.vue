@@ -1,8 +1,8 @@
 <template>
     <div>
         <NuxtLink to="/dashboard" class=" underline">/dashborad</NuxtLink><span>/posts</span>
-
-        <div v-if="posts">
+       
+        <div v-if="posts" >
             <div v-for="post in posts" :key="post.id"
                 class="max-w-xxl mt-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
 
@@ -34,13 +34,13 @@
                     <div class=" flex items-center justify-start">
 
                         <h5>Summary:</h5>
-                        <span class=" block">{{ post.summary }}</span>
+                        <span class=" block" dir="rtl">{{ post.summary }}</span>
                     </div>
 
 
                 </article>
 
-                <article class="max-w-none prose  prose-slate prose-headings:underline prose-a:text-blue-600 p-6">
+                <article dir="rtl" class="max-w-none prose  prose-slate prose-headings:underline prose-a:text-blue-600 p-6">
                     <h1>{{ post.title }}</h1>
                     <div v-html="post.content"></div>
 

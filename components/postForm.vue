@@ -156,7 +156,7 @@
 
 <script  setup>
 import { useVuelidate } from '@vuelidate/core'
-import { required, helpers, minLength, requiredIf } from '@vuelidate/validators'
+import { required, helpers, minLength, requiredIf, maxLength } from '@vuelidate/validators'
 
 
 
@@ -186,19 +186,28 @@ var formValues = ref(
   }
 );
 
+const alphaRegex=helpers.regex(/^[\u0621-\u064A\u0660-\u0669)(a-zA-Z!@#$%&%*]+$/);
+
 const rules = computed(() => (
 
   {
     postTitle: {
-      required: helpers.withMessage('Title is required', required)
+      required: helpers.withMessage('Title is required', required),
+      // alphaRegex: helpers.withMessage('Title must be alphaNum', alphaRegex),
+      maxLength: helpers.withMessage('Title is not more than 75 char', maxLength(75))
 
     },
     metaTitle: { required: helpers.withMessage('Meta Title is required', required) }, // Matches state.lastName
-    summary: { required: helpers.withMessage('summary is required', required) },
+    summary: {
+      required: helpers.withMessage('summary is required', required),
+      // alphaRegex: helpers.withMessage('summary must be alphaNum', alphaRegex),
+      maxLength: helpers.withMessage('summary is not more than 300 char', maxLength(300))
+    },
     postCategory: { required: helpers.withMessage('category is required', required) },
     content: {
       minLength: helpers.withMessage('content is required', minLength(30)),
-      required: helpers.withMessage('content is required', required)
+      required: helpers.withMessage('content is required', required),
+      // alphaRegex: helpers.withMessage('content must be alphaNum', alphaRegex),
     },
     image: { requiredIf: helpers.withMessage('Photo is required', requiredIf(props.formType == "Submit")) }
 
@@ -317,7 +326,7 @@ const submitPostForm = async () => {
 
 
   const body = {
-   
+
     "title": formValues.value.postTitle,
     "image": formValues.value.image,
     "summary": formValues.value.summary,
@@ -354,7 +363,7 @@ const submitPostForm = async () => {
 
   const url = `/posts/update/${props.post.id}`;
   const { uploadApi } = useFetchingData();
-  
+
   uploadApi.post(url, body).then((response) => {
     console.log(response)
 
