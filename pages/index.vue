@@ -76,17 +76,28 @@
 
     </div>
 </template>
-
+<!-- 
 <script >
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, helpers } from '@vuelidate/validators'
 import { reactive } from 'vue';
+import { useMyAuthenticationStore } from "@/stores/authentication";
+import { storeToRefs } from 'pinia';
+
+
 
 
 
 export default {
+    
+
     name: "Login",
+    
     setup() {
+    
+        const authenticationStore = useMyAuthenticationStore();
+        const { user, token } = storeToRefs(authenticationStore);
+     
         const state = reactive({
             email: '',
             password: ''
@@ -102,35 +113,114 @@ export default {
 
         const v$ = useVuelidate(rules, state);
         const url = "/login";
-        const { makePostRequest } = useFetchingData(state, url,  "post", "login","application/json");
+        const { Api } = useFetchingData();
+
+
 
         async function submitLoginForm() {
             const isFormCorrect = await v$.value.$validate()
             if (!isFormCorrect) return
 
             console.log(state)
+            Api.post(url, state).then((response) => {
+                if (response) {
+                    if (response.status == 200) {
+
+                        if(process.client)
+                        {
+                            sessionStorage.setItem('user',JSON.stringify(response.data.data))
+                            authenticationStore.authenticate()
+                            navigateTo({path:"/dashboard"})
+                        }
+                        
+
+                     
+                      
+                       
+
+                    }
+                }
 
 
+            }).catch((error) => {
 
-
-            const response = await makePostRequest();
-
-           
-            
-                console.log(response._data)
-            
-
-
-
+            })
 
         }
 
         return {
-            state, v$, submitLoginForm,url
+            state, v$, submitLoginForm, url
         }
 
 
     }
+}
+
+
+</script> -->
+<script setup>
+import { useVuelidate } from '@vuelidate/core'
+import { required, email, helpers } from '@vuelidate/validators'
+import { reactive } from 'vue';
+import { useMyAuthenticationStore } from "@/stores/authentication";
+import { storeToRefs } from 'pinia';
+
+definePageMeta({
+    layout:false,
+})
+
+
+
+const authenticationStore = useMyAuthenticationStore();
+const { user, token } = storeToRefs(authenticationStore);
+
+const state = reactive({
+    email: '',
+    password: ''
+})
+const rules = {
+    email: {
+        required: helpers.withMessage('Email is required', required),
+        email: helpers.withMessage('please enter a valid email address', email)
+    },
+    password: { required: helpers.withMessage('Password is required', required) }, // Matches state.lastName
+
+}
+
+const v$ = useVuelidate(rules, state);
+const url = "/login";
+const { Api } = useFetchingData();
+
+
+
+async function submitLoginForm() {
+    const isFormCorrect = await v$.value.$validate()
+    if (!isFormCorrect) return
+
+    console.log(state)
+    Api.post(url, state).then((response) => {
+        if (response) {
+            if (response.status == 200) {
+
+                if (process.client) {
+                    sessionStorage.setItem('user', JSON.stringify(response.data.data))
+                    authenticationStore.authenticate()
+                    navigateTo({ path: "/dashboard" })
+                }
+
+
+
+
+
+
+            }
+        }
+
+
+    }).catch((error) => {
+
+    })
+
 }
 
 

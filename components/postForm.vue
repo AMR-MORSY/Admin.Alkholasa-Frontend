@@ -16,7 +16,7 @@
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG or GIF (MAX.
             800x400px).</p>
 
-          <div v-if="fileErrors.length">
+          <div v-if="fileErrors">
             <p style="color: red; font-size: 0.7rem; padding-left: 3px; padding-top: 3px;" v-for="error in fileErrors"
               :key="error">{{ error }}</p>
           </div>
@@ -110,7 +110,7 @@
 
       </div>
 
-
+<!-- 
 
       <div style=" display: flex; align-items: center; justify-content: center;">
 
@@ -129,7 +129,7 @@
         </div>
 
       </div>
-
+ -->
 
 
 
@@ -161,8 +161,10 @@ import { required, helpers, minLength, requiredIf, maxLength } from '@vuelidate/
 
 
 
-const fileErrors = ref([])
+var fileErrors = ref()
 const categories = ref([]);
+
+
 
 
 
@@ -179,7 +181,7 @@ var formValues = ref(
     postTitle: '',
     metaTitle: '',
     summary: '',
-    content: '',
+    // content: '',
     image: '',
     published: 0
 
@@ -193,22 +195,22 @@ const rules = computed(() => (
   {
     postTitle: {
       required: helpers.withMessage('Title is required', required),
-      // alphaRegex: helpers.withMessage('Title must be alphaNum', alphaRegex),
+   
       maxLength: helpers.withMessage('Title is not more than 75 char', maxLength(75))
 
     },
     metaTitle: { required: helpers.withMessage('Meta Title is required', required) }, // Matches state.lastName
     summary: {
       required: helpers.withMessage('summary is required', required),
-      // alphaRegex: helpers.withMessage('summary must be alphaNum', alphaRegex),
+  
       maxLength: helpers.withMessage('summary is not more than 300 char', maxLength(300))
     },
     postCategory: { required: helpers.withMessage('category is required', required) },
-    content: {
-      minLength: helpers.withMessage('content is required', minLength(30)),
-      required: helpers.withMessage('content is required', required),
-      // alphaRegex: helpers.withMessage('content must be alphaNum', alphaRegex),
-    },
+    // content: {
+    //   minLength: helpers.withMessage('content is required', minLength(30)),
+    //   required: helpers.withMessage('content is required', required),
+    
+    // },
     image: { requiredIf: helpers.withMessage('Photo is required', requiredIf(props.formType == "Submit")) }
 
   }
@@ -222,69 +224,11 @@ const v$ = useVuelidate(rules, formValues)
 
 
 const onFileChange = (event) => {
-  fileErrors.value = [];
 
   const [_file] = event.target.files
   formValues.value.image = _file;
+  fileErrors.value=useOnFileChange(formValues.value.image)
 
-  function findFileType(name) {
-    const nameArray = name.split(".");
-
-    if (nameArray[1] == "jpg" || nameArray[1] == "JPG" || nameArray[1] == "PNG" || nameArray[1] == "png" || nameArray[1] == "svg" || nameArray[1] == "SVG") {
-      return true
-    }
-    return false
-
-  }
-
-  if (formValues.value.image != null) {
-
-
-    if (!findFileType(formValues.value.image.name)) {
-      function checkTypeError(error) {
-        return error == "photo type is not supported";
-      }
-      let type = fileErrors.value.find(checkTypeError);
-
-
-      if (!type) {
-        fileErrors.value.push("photo type is not supported")
-
-      }
-
-
-    }
-    else {
-
-      function checkSizeError(error) {
-        return error == "Photo size Should be less than 1MB";
-      }
-
-      fileErrors.value = fileErrors.value.filter((el) => {
-
-        return el != "photo type is not supported";
-
-      });
-      if (formValues.value.image.size > 1024 * 1024) {
-
-
-        let size = fileErrors.value.find(checkSizeError);
-
-
-        if (!size) {
-          fileErrors.value.push("Photo size Should be less than 1MB")
-
-        }
-
-
-      }
-
-
-
-
-    }
-
-  }
 
 }
 
@@ -311,13 +255,14 @@ const getPostCategories = async () => {
 
 const submitPostForm = async () => {
 
+  console.log(fileErrors.value)
   console.log(formValues.value)
 
 
 
   const isFormCorrect = await v$.value.$validate()
 
-  if (!isFormCorrect || fileErrors.length > 0) {
+  if (!isFormCorrect || fileErrors.value!=null) {
     return alert("Some fields are incorrect  ")
 
   }
@@ -333,11 +278,11 @@ const submitPostForm = async () => {
     "category_id": formValues.value.postCategory,
     "user_id": 2,
     "metaTitle": formValues.value.metaTitle,
-    "content": formValues.value.content,
+    // "content": formValues.value.content,
     "published": formValues.value.published
   }
 
-  console.log(body)
+
 
   if (props.formType == "Submit") {
 

@@ -1,14 +1,13 @@
 <template>
   <div>
-
+     
     <SpinnerPage />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
 
     <BusinessCardToast />
-    <ServerFeedbackToast/>
-   
-
+    <ServerFeedbackToast />
   </div>
+ 
 </template>

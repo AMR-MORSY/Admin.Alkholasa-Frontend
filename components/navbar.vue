@@ -37,9 +37,9 @@
                             <a href="#"
                                 class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Pricing</a>
                         </li>
-                        <li>
+                        <li v-if="token" @click="logout">
                             <a href="#"
-                                class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Contact</a>
+                                class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Logout</a>
                         </li>
                     </ul>
                 </div>
@@ -53,6 +53,50 @@
 
 import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'
+import {  useMyAuthenticationStore} from "@/stores/authentication";
+import { storeToRefs } from 'pinia';
+import {  useFetchingData} from "@/composables/useFetchingData";
+import { useToast } from 'primevue/usetoast';
+
+const AuthStore=useMyAuthenticationStore();
+const {token}=storeToRefs(AuthStore)
+const toast=useToast();
+
+
+const logout=()=>{
+    const url="/logout";
+
+    const{Api}=useFetchingData();
+    Api.post(url).then((response)=>{
+        if(response)
+        {
+            if(response.status==204)
+            {
+                toast.add({
+                    severity:"success",
+                    group:"SFB",
+                    summary:"Logged Out Successfully",
+                    life:3000
+                })
+
+                if(process.client)
+                {
+                    sessionStorage.removeItem('user')
+                    AuthStore.authenticate();
+                    navigateTo({path:"/"})
+
+                }
+                
+
+
+
+            }
+        }
+    })
+
+}
+
+
 
 onMounted(() => {
     initFlowbite();

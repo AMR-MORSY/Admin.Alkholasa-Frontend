@@ -1,8 +1,8 @@
 <template>
     <div>
         <NuxtLink to="/dashboard" class=" underline">/dashborad</NuxtLink><span>/posts</span>
-       
-        <div v-if="posts" >
+
+        <div v-if="posts">
             <div v-for="post in posts" :key="post.id"
                 class="max-w-xxl mt-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
 
@@ -50,7 +50,8 @@
 
                     <button class=" border border-spacing-9 p-2 rounded bg-red-700 text-center text-white" type="button"
                         @click="deletePost(post.id)"> Delete</button>
-                    <button @click="updatePost(post.id)" class=" border border-spacing-9 p-2 rounded bg-green-700 text-center text-white" type="button">
+                    <button @click="updatePost(post.id)"
+                        class=" border border-spacing-9 p-2 rounded bg-green-700 text-center text-white" type="button">
                         Update</button>
                 </div>
 
@@ -73,7 +74,9 @@
 
 <script setup>
 import { useRouter } from '#imports';
+import { usePrimevueToastService } from '~/composables/usePrimevueToastService';
 const router = useRouter();
+const toastService=usePrimevueToastService();
 
 const posts = ref(null);
 const htmlContent = ref(null);
@@ -83,8 +86,15 @@ const getPosts = () => {
     const { Api } = useFetchingData();
 
     Api.get(url).then((response) => {
-        console.log(response);
-        posts.value = response.data.data;
+        if (response) {
+            if (response.status == 200) {
+                posts.value = response.data.data;
+
+            }
+
+
+        }
+
 
 
 
@@ -103,15 +113,28 @@ onMounted(() => {
 
 const deletePost = (id) => {
 
-   
+
 
     const url = `/posts/${id}`;
     const { Api } = useFetchingData();
 
     Api.delete(url).then((response) => {
-        console.log(response)
+        if (response) {
+            if (response.status == 200) {
+               toastService.add({
+                severity:"success",
+                group:"SFB",
+                life:3000,
+                summary:"Deleted Successfully"
+               })
+                 location.reload();
 
-        window.location().refresh()
+            }
+
+        }
+
+
+
 
     }).catch((error) => {
         console.log(error)
@@ -122,8 +145,8 @@ const deletePost = (id) => {
 
 }
 
-const updatePost=(id)=>{
-    return router.push({ path: `/dashboard/posts/edit-post/${id}`});
+const updatePost = (id) => {
+    return router.push({ path: `/dashboard/posts/edit-post/${id}` });
 
 }
 

@@ -1,10 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from 'nuxt/config';
-import path from 'path';
-import { resolve } from 'path'
+
 export default defineNuxtConfig({
   devtools: { enabled: false },
-  ssr: true,
+ ssr:false,
+ 
   modules: [
     '@nuxtjs/tailwindcss',
     'nuxt-mdi',

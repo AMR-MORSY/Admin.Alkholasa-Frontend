@@ -18,14 +18,21 @@ const getPost=()=>{
     const { Api } = useFetchingData();
 
     Api.get(url).then((response) => {
-        console.log(response);
-        post.value = response.data;
-        console.log(post.value);
+      if(response)
+      {
+        if (response.status==200) {
+          post.value = response.data;
+        
+          
+        }
+      }
+
+      
 
 
 
     }).catch((error) => {
-        console.log(error)
+     
 
     })
 
